@@ -54,10 +54,15 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not alive:
 		return
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-		_yaw -= event.relative.x * mouse_sensitivity
-		_pitch = clamp(_pitch - event.relative.y * mouse_sensitivity, deg_to_rad(-85.0), deg_to_rad(85.0))
+		apply_look_delta(event.relative * mouse_sensitivity)
 	if event.is_action_pressed("pause"):
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED else Input.MOUSE_MODE_CAPTURED
+
+## Gira a câmera. `delta` já vem multiplicado pela sensibilidade de quem
+## chama (mouse ou o dedo no controle de toque no celular).
+func apply_look_delta(delta: Vector2) -> void:
+	_yaw -= delta.x
+	_pitch = clamp(_pitch - delta.y, deg_to_rad(-85.0), deg_to_rad(85.0))
 
 func _physics_process(delta: float) -> void:
 	if not alive:

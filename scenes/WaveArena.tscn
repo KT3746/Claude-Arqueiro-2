@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/entities/Player.tscn" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/entities/Enemy.tscn" id="2"]
@@ -8,6 +8,7 @@
 [ext_resource type="Script" path="res://scripts/LeafParticles.gd" id="6"]
 [ext_resource type="Script" path="res://scripts/WaveManager.gd" id="7"]
 [ext_resource type="PackedScene" path="res://scenes/ui/HUD.tscn" id="8"]
+[ext_resource type="PackedScene" path="res://scenes/ui/TouchControls.tscn" id="9"]
 
 [sub_resource type="BoxMesh" id="GroundMesh"]
 size = Vector3(80, 1, 80)
@@ -95,3 +96,5 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 0, 0)
 transform = Transform3D(0.707, 0, -0.707, 0, 1, 0, 0.707, 0, 0.707, -12.7, 0, -12.7)
 
 [node name="HUD" parent="." instance=ExtResource("8")]
+
+[node name="TouchControls" parent="." instance=ExtResource("9")]
