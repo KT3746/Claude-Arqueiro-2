@@ -1,0 +1,50 @@
+[gd_scene load_steps=6 format=3]
+
+[sub_resource type="StandardMaterial3D" id="StoneMat"]
+albedo_color = Color(0.44, 0.47, 0.4, 1)
+roughness = 0.95
+
+[sub_resource type="CylinderMesh" id="BaseMesh"]
+top_radius = 0.36
+bottom_radius = 0.4
+height = 0.45
+radial_segments = 10
+
+[sub_resource type="CylinderMesh" id="MidMesh"]
+top_radius = 0.3
+bottom_radius = 0.34
+height = 0.55
+radial_segments = 10
+
+[sub_resource type="CylinderMesh" id="TopMesh"]
+top_radius = 0.22
+bottom_radius = 0.28
+height = 0.3
+radial_segments = 10
+
+[sub_resource type="CylinderShape3D" id="CollShape"]
+radius = 0.38
+height = 1.25
+
+[node name="RuinPillar" type="StaticBody3D" groups=["ruins"]]
+collision_layer = 1
+collision_mask = 0
+
+[node name="Base" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.225, 0)
+mesh = SubResource("BaseMesh")
+surface_material_override/0 = SubResource("StoneMat")
+
+[node name="Mid" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.996, 0, 0.087, 0, 1, 0, -0.087, 0, 0.996, 0.02, 0.72, 0)
+mesh = SubResource("MidMesh")
+surface_material_override/0 = SubResource("StoneMat")
+
+[node name="Top" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.966, 0, 0.259, 0, 1, 0, -0.259, 0, 0.966, 0.09, 1.12, 0)
+mesh = SubResource("TopMesh")
+surface_material_override/0 = SubResource("StoneMat")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("CollShape")

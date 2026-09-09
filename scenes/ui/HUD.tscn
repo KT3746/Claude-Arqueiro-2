@@ -1,0 +1,137 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/HUD.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/Crosshair.gd" id="2"]
+
+[node name="HUD" type="CanvasLayer"]
+script = ExtResource("1")
+
+[node name="Crosshair" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("2")
+
+[node name="Margin" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="ScoreLabel" type="Label" parent="Margin"]
+offset_left = 24.0
+offset_top = 20.0
+offset_right = 260.0
+offset_bottom = 54.0
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.96, 0.92, 0.8, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.6)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+text = "Pontos: 0"
+
+[node name="WaveLabel" type="Label" parent="Margin"]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -260.0
+offset_top = 20.0
+offset_right = -24.0
+offset_bottom = 54.0
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.96, 0.92, 0.8, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.6)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+horizontal_alignment = 2
+text = "Onda 1"
+
+[node name="ComboLabel" type="Label" parent="Margin"]
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -120.0
+offset_top = 20.0
+offset_right = 120.0
+offset_bottom = 52.0
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(1.0, 0.82, 0.35, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.6)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+horizontal_alignment = 1
+text = "Combo x2"
+
+[node name="WaveBanner" type="Label" parent="Margin"]
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -160.0
+offset_top = 140.0
+offset_right = 160.0
+offset_bottom = 190.0
+theme_override_font_sizes/font_size = 34
+theme_override_colors/font_color = Color(0.96, 0.92, 0.8, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.7)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+horizontal_alignment = 1
+text = "Onda 1"
+
+[node name="HealthBar" type="ProgressBar" parent="Margin"]
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -56.0
+offset_right = 224.0
+offset_bottom = -30.0
+max_value = 100.0
+value = 100.0
+show_percentage = false
+
+[node name="DrawBar" type="ProgressBar" parent="Margin"]
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = -90.0
+offset_top = -110.0
+offset_right = 90.0
+offset_bottom = -94.0
+max_value = 100.0
+value = 0.0
+show_percentage = false
+
+[node name="GameOverPanel" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Backdrop" type="ColorRect" parent="GameOverPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.05, 0.04, 0.03, 0.72)
+
+[node name="Center" type="CenterContainer" parent="GameOverPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Box" type="VBoxContainer" parent="GameOverPanel/Center"]
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="GameOverPanel/Center/Box"]
+theme_override_font_sizes/font_size = 40
+theme_override_colors/font_color = Color(0.96, 0.92, 0.8, 1)
+horizontal_alignment = 1
+text = "Você Caiu"
+
+[node name="FinalScoreLabel" type="Label" parent="GameOverPanel/Center/Box"]
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.9, 0.85, 0.7, 1)
+horizontal_alignment = 1
+text = "Pontuação final: 0"
+
+[node name="AccuracyLabel" type="Label" parent="GameOverPanel/Center/Box"]
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.8, 0.76, 0.65, 1)
+horizontal_alignment = 1
+text = "Precisão: 0%"
+
+[node name="RestartButton" type="Button" parent="GameOverPanel/Center/Box"]
+custom_minimum_size = Vector2(220, 48)
+theme_override_font_sizes/font_size = 20
+text = "Tentar de novo"

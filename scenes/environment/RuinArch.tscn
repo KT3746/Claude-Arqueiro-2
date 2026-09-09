@@ -1,0 +1,48 @@
+[gd_scene load_steps=6 format=3]
+
+[sub_resource type="StandardMaterial3D" id="StoneMat"]
+albedo_color = Color(0.46, 0.48, 0.42, 1)
+roughness = 0.95
+
+[sub_resource type="BoxMesh" id="PostMesh"]
+size = Vector3(0.5, 3.2, 0.5)
+
+[sub_resource type="BoxMesh" id="LintelMesh"]
+size = Vector3(3.4, 0.55, 0.6)
+
+[sub_resource type="BoxShape3D" id="PostShape"]
+size = Vector3(0.5, 3.2, 0.5)
+
+[sub_resource type="BoxShape3D" id="LintelShape"]
+size = Vector3(3.4, 0.55, 0.6)
+
+[node name="RuinArch" type="StaticBody3D" groups=["ruins"]]
+collision_layer = 1
+collision_mask = 0
+
+[node name="PostLeft" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.45, 1.6, 0)
+mesh = SubResource("PostMesh")
+surface_material_override/0 = SubResource("StoneMat")
+
+[node name="PostRight" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45, 1.6, 0)
+mesh = SubResource("PostMesh")
+surface_material_override/0 = SubResource("StoneMat")
+
+[node name="Lintel" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.35, 0)
+mesh = SubResource("LintelMesh")
+surface_material_override/0 = SubResource("StoneMat")
+
+[node name="CollisionLeft" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.45, 1.6, 0)
+shape = SubResource("PostShape")
+
+[node name="CollisionRight" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45, 1.6, 0)
+shape = SubResource("PostShape")
+
+[node name="CollisionLintel" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.35, 0)
+shape = SubResource("LintelShape")

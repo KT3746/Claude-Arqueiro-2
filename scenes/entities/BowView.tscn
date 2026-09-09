@@ -1,0 +1,89 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scripts/BowView.gd" id="1"]
+
+[sub_resource type="StandardMaterial3D" id="WoodMat"]
+albedo_color = Color(0.32, 0.2, 0.11, 1)
+roughness = 0.75
+
+[sub_resource type="CylinderMesh" id="LimbMesh"]
+top_radius = 0.02
+bottom_radius = 0.015
+height = 1.0
+radial_segments = 7
+
+[sub_resource type="StandardMaterial3D" id="GripMat"]
+albedo_color = Color(0.18, 0.13, 0.09, 1)
+roughness = 0.9
+
+[sub_resource type="CylinderMesh" id="GripMesh"]
+top_radius = 0.026
+bottom_radius = 0.026
+height = 0.16
+radial_segments = 8
+
+[sub_resource type="StandardMaterial3D" id="StringMat"]
+albedo_color = Color(0.85, 0.83, 0.78, 1)
+roughness = 0.4
+
+[sub_resource type="CylinderMesh" id="StringMesh"]
+top_radius = 0.0035
+bottom_radius = 0.0035
+height = 1.0
+radial_segments = 5
+
+[sub_resource type="StandardMaterial3D" id="ArrowShaftMat"]
+albedo_color = Color(0.36, 0.24, 0.14, 1)
+roughness = 0.8
+
+[sub_resource type="CylinderMesh" id="NockedArrowMesh"]
+top_radius = 0.008
+bottom_radius = 0.008
+height = 0.75
+radial_segments = 6
+
+[node name="BowView" type="Node3D"]
+script = ExtResource("1")
+
+[node name="LimbTopA" type="MeshInstance3D" parent="."]
+mesh = SubResource("LimbMesh")
+surface_material_override/0 = SubResource("WoodMat")
+
+[node name="LimbTopB" type="MeshInstance3D" parent="."]
+mesh = SubResource("LimbMesh")
+surface_material_override/0 = SubResource("WoodMat")
+
+[node name="LimbBottomA" type="MeshInstance3D" parent="."]
+mesh = SubResource("LimbMesh")
+surface_material_override/0 = SubResource("WoodMat")
+
+[node name="LimbBottomB" type="MeshInstance3D" parent="."]
+mesh = SubResource("LimbMesh")
+surface_material_override/0 = SubResource("WoodMat")
+
+[node name="Grip" type="MeshInstance3D" parent="."]
+mesh = SubResource("GripMesh")
+surface_material_override/0 = SubResource("GripMat")
+
+[node name="TopTip" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.42, 0)
+
+[node name="BottomTip" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.42, 0)
+
+[node name="Nock" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.03)
+
+[node name="StringTop" type="MeshInstance3D" parent="."]
+mesh = SubResource("StringMesh")
+surface_material_override/0 = SubResource("StringMat")
+
+[node name="StringBottom" type="MeshInstance3D" parent="."]
+mesh = SubResource("StringMesh")
+surface_material_override/0 = SubResource("StringMat")
+
+[node name="NockedArrow" type="MeshInstance3D" parent="."]
+visible = false
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -0.35)
+mesh = SubResource("NockedArrowMesh")
+surface_material_override/0 = SubResource("ArrowShaftMat")
