@@ -38,6 +38,7 @@ func _on_body_entered(body: Node) -> void:
 		return
 	if body is RigidBody3D or body.is_in_group("arrow"):
 		return
+	Audio.play("impact_wood", -4.0, randf_range(0.9, 1.1))
 	_stick_to(body)
 
 func _on_tip_area_entered(area: Area3D) -> void:
@@ -47,6 +48,7 @@ func _on_tip_area_entered(area: Area3D) -> void:
 		var target = area.get_parent()
 		if target and target.has_method("register_hit"):
 			target.register_hit(tip_sensor.global_position)
+		Audio.play("impact_wood", -2.0, randf_range(0.95, 1.1))
 		_spawn_hit_effect(tip_sensor.global_position)
 		_stick_to(area)
 	elif area.is_in_group("enemy_hitbox"):
@@ -55,6 +57,7 @@ func _on_tip_area_entered(area: Area3D) -> void:
 		if enemy and enemy.has_method("take_damage"):
 			enemy.take_damage(damage, is_headshot)
 		GameState.register_hit(50 if is_headshot else 20)
+		Audio.play("impact_flesh", -2.0, randf_range(0.9, 1.15))
 		_spawn_hit_effect(tip_sensor.global_position)
 		_stick_to(area)
 

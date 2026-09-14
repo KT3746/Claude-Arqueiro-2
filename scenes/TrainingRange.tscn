@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3]
+[gd_scene load_steps=20 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/entities/Player.tscn" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/entities/Target.tscn" id="2"]
@@ -12,6 +12,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/HUD.tscn" id="10"]
 [ext_resource type="Script" path="res://scripts/TrainingRange.gd" id="11"]
 [ext_resource type="PackedScene" path="res://scenes/ui/TouchControls.tscn" id="12"]
+[ext_resource type="PackedScene" path="res://scenes/ui/PauseMenu.tscn" id="13"]
 
 [sub_resource type="BoxMesh" id="GroundMesh"]
 size = Vector3(80, 1, 90)
@@ -147,3 +148,5 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, -27)
 [node name="HUD" parent="." instance=ExtResource("10")]
 
 [node name="TouchControls" parent="." instance=ExtResource("12")]
+
+[node name="PauseMenu" parent="." instance=ExtResource("13")]

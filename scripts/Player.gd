@@ -28,6 +28,9 @@ var is_drawing: bool = false
 var draw_time: float = 0.0
 var _aim_amount: float = 0.0
 var _bob_time: float = 0.0
+var _last_bob_phase: float = 0.0
+var _shake_strength: float = 0.0
+var _last_health: int = -1
 var alive: bool = true
 
 var arrow_scene: PackedScene = preload("res://scenes/entities/Arrow.tscn")
@@ -49,14 +52,15 @@ func _ready() -> void:
 	bow_view.position = _bow_hip_pos
 	bow_view.rotation = _bow_hip_rot
 	GameState.game_over.connect(_on_game_over)
+	GameState.big_hit.connect(_on_big_hit)
+	GameState.health_changed.connect(_on_health_changed)
+	_last_health = GameState.health
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not alive:
 		return
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		apply_look_delta(event.relative * mouse_sensitivity)
-	if event.is_action_pressed("pause"):
-		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED else Input.MOUSE_MODE_CAPTURED
 
 ## Gira a câmera. `delta` já vem multiplicado pela sensibilidade de quem
 ## chama (mouse ou o dedo no controle de toque no celular).
@@ -105,14 +109,28 @@ func _handle_movement(delta: float) -> void:
 	var horizontal_speed: float = Vector2(velocity.x, velocity.z).length()
 	if is_on_floor() and horizontal_speed > 0.5:
 		_bob_time += delta * horizontal_speed * 1.6
+		var phase: float = fmod(_bob_time, TAU)
+		if phase < _last_bob_phase:
+			Audio.play("footstep", -10.0, randf_range(0.9, 1.1))
+		_last_bob_phase = phase
 	else:
 		_bob_time = lerp(_bob_time, 0.0, delta * 4.0)
+		_last_bob_phase = fmod(_bob_time, TAU)
 	camera_rig.position.y = sin(_bob_time) * 0.03 * (0.3 if is_aiming else 1.0)
+
+	# Tremor de câmera (headshot/bullseye/dano) — decai sozinho com o tempo.
+	if _shake_strength > 0.001:
+		camera_rig.rotation.z = randf_range(-1.0, 1.0) * _shake_strength
+		camera_rig.rotation.x = randf_range(-1.0, 1.0) * _shake_strength * 0.5
+		_shake_strength = move_toward(_shake_strength, 0.0, delta * 5.0)
+	elif camera_rig.rotation != Vector3.ZERO:
+		camera_rig.rotation = Vector3.ZERO
 
 func _handle_draw(delta: float) -> void:
 	if Input.is_action_just_pressed("shoot") and not is_drawing:
 		is_drawing = true
 		draw_time = 0.0
+		Audio.play("draw", -8.0)
 	if is_drawing:
 		if Input.is_action_pressed("shoot"):
 			draw_time = min(draw_time + delta, max_draw_time)
@@ -131,6 +149,20 @@ func _fire_arrow() -> void:
 	var dir: Vector3 = -camera.global_transform.basis.z
 	arrow.launch(muzzle.global_position, dir * speed)
 	GameState.register_shot()
+	Audio.play("release", -2.0, lerp(0.9, 1.15, t))
+
+func _on_big_hit() -> void:
+	_shake_strength = max(_shake_strength, 0.12)
+	Engine.time_scale = 0.06
+	get_tree().create_timer(0.05, true, false, true).timeout.connect(func():
+		Engine.time_scale = 1.0
+	)
+
+func _on_health_changed(h: int, _max_h: int) -> void:
+	if _last_health != -1 and h < _last_health:
+		_shake_strength = max(_shake_strength, 0.06)
+		Audio.play("damage")
+	_last_health = h
 
 func _update_bow_pose(delta: float) -> void:
 	var aim_target: float = 1.0 if is_aiming else 0.0

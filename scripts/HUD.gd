@@ -9,9 +9,12 @@ extends CanvasLayer
 @onready var draw_bar: ProgressBar = $Margin/DrawBar
 @onready var crosshair: Control = $Crosshair
 @onready var game_over_panel: Control = $GameOverPanel
+@onready var title_label: Label = $GameOverPanel/Center/Box/TitleLabel
 @onready var final_score_label: Label = $GameOverPanel/Center/Box/FinalScoreLabel
 @onready var accuracy_label: Label = $GameOverPanel/Center/Box/AccuracyLabel
+@onready var record_label: Label = $GameOverPanel/Center/Box/RecordLabel
 @onready var restart_button: Button = $GameOverPanel/Center/Box/RestartButton
+@onready var menu_button: Button = $GameOverPanel/Center/Box/MenuButton
 @onready var wave_banner: Label = $Margin/WaveBanner
 
 var player: Node = null
@@ -24,6 +27,7 @@ func _ready() -> void:
 	GameState.combo_changed.connect(_on_combo_changed)
 	GameState.game_over.connect(_on_game_over)
 	restart_button.pressed.connect(_on_restart_pressed)
+	menu_button.pressed.connect(_on_menu_pressed)
 
 	player = get_tree().get_first_node_in_group("player")
 
@@ -74,11 +78,19 @@ func _on_combo_changed(c: int) -> void:
 		combo_label.hide()
 
 func _on_game_over() -> void:
+	var is_new_record: bool = GameState.score >= GameState.high_score and GameState.score > 0
+	title_label.text = "Novo Recorde!" if is_new_record else "Você Caiu"
 	final_score_label.text = "Pontuação final: %d" % GameState.score
 	accuracy_label.text = "Precisão: %.0f%%" % GameState.get_accuracy()
+	record_label.text = "Recorde: %d pontos · Onda %d" % [GameState.high_score, GameState.best_wave]
 	game_over_panel.show()
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
 func _on_restart_pressed() -> void:
+	Audio.play("click")
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	get_tree().reload_current_scene()
+
+func _on_menu_pressed() -> void:
+	Audio.play("click")
+	get_tree().change_scene_to_file("res://scenes/ui/MainMenu.tscn")

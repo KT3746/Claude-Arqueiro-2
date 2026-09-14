@@ -29,7 +29,7 @@ func _ready() -> void:
 		if child is Marker3D:
 			_spawn_points.append(child)
 	if auto_start:
-		get_tree().create_timer(first_wave_delay).timeout.connect(start)
+		get_tree().create_timer(first_wave_delay, false).timeout.connect(start)
 	GameState.game_over.connect(stop)
 
 func start() -> void:
@@ -48,6 +48,7 @@ func _next_wave() -> void:
 	GameState.advance_wave()
 	var count: int = base_enemy_count + (GameState.current_wave - 1) * enemies_per_wave_increase
 	wave_started.emit(GameState.current_wave, count)
+	Audio.play("wave_start")
 	_wave_active = true
 	_spawn_wave(count)
 
@@ -57,7 +58,7 @@ func _spawn_wave(count: int) -> void:
 		if not _running:
 			return
 		var delay: float = i * spawn_stagger
-		get_tree().create_timer(delay).timeout.connect(_spawn_one)
+		get_tree().create_timer(delay, false).timeout.connect(_spawn_one)
 
 func _spawn_one() -> void:
 	_pending_spawns = max(0, _pending_spawns - 1)
@@ -65,10 +66,25 @@ func _spawn_one() -> void:
 		return
 	var point: Node3D = _spawn_points[randi() % _spawn_points.size()]
 	var enemy := enemy_scene.instantiate()
+	_configure_enemy(enemy)
 	get_tree().current_scene.add_child(enemy)
 	enemy.global_position = point.global_position
 	enemy.died.connect(_on_enemy_died)
 	_alive_enemies += 1
+
+## Deixa os espectros mais fortes/rápidos a cada onda, e a partir da 3ª onda
+## uma chance de vir um "batedor" — menor, mais fraco, mas bem mais rápido.
+func _configure_enemy(enemy: Node) -> void:
+	var wave: int = GameState.current_wave
+	var is_scout: bool = wave >= 3 and randf() < 0.3
+	if is_scout:
+		enemy.max_health = 18
+		enemy.move_speed = 4.2
+		enemy.kill_bonus = 20
+		enemy.scale = Vector3(0.72, 0.72, 0.72)
+	else:
+		enemy.max_health = min(40 + (wave - 1) * 4, 100)
+		enemy.move_speed = min(2.4 + (wave - 1) * 0.12, 4.0)
 
 func _on_enemy_died() -> void:
 	_alive_enemies -= 1
@@ -77,4 +93,4 @@ func _on_enemy_died() -> void:
 		wave_cleared.emit(GameState.current_wave)
 		if GameState.health <= 0:
 			return
-		get_tree().create_timer(time_between_waves).timeout.connect(_next_wave)
+		get_tree().create_timer(time_between_waves, false).timeout.connect(_next_wave)

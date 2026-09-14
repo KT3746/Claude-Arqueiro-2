@@ -63,5 +63,6 @@ func take_damage(amount: int, is_headshot: bool) -> void:
 func _die() -> void:
 	_dead = true
 	GameState.register_hit(kill_bonus)
+	Audio.play("enemy_death")
 	died.emit()
 	queue_free()
