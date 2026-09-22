@@ -29,10 +29,10 @@ func register_hit(world_pos: Vector3) -> void:
 	var dist: float = Vector2(local_pos.x, local_pos.y).length()
 	for zone in ZONES:
 		if dist <= zone.radius:
-			GameState.register_hit(zone.points)
+			GameState.register_hit(zone.points, zone.name)
 			if zone.points >= 80:
 				Audio.play("bullseye")
 			hit.emit(zone.points, zone.name)
 			return
-	GameState.register_hit(5)
+	GameState.register_hit(5, "Tábua")
 	hit.emit(5, "Tábua")

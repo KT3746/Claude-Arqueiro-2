@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene load_steps=16 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/entities/Player.tscn" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/entities/Enemy.tscn" id="2"]
@@ -16,6 +16,12 @@ size = Vector3(80, 1, 80)
 
 [sub_resource type="BoxShape3D" id="GroundShape"]
 size = Vector3(80, 1, 80)
+
+[sub_resource type="BoxShape3D" id="WallShapeEW"]
+size = Vector3(2, 12, 84)
+
+[sub_resource type="BoxShape3D" id="WallShapeNS"]
+size = Vector3(84, 12, 2)
 
 [sub_resource type="StandardMaterial3D" id="GroundMat"]
 albedo_color = Color(0.3, 0.4, 0.24, 1)
@@ -43,6 +49,38 @@ surface_material_override/0 = SubResource("GroundMat")
 [node name="GroundCollision" type="CollisionShape3D" parent="Ground"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 shape = SubResource("GroundShape")
+
+[node name="WallEast" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 41, 5, 0)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WallEast"]
+shape = SubResource("WallShapeEW")
+
+[node name="WallWest" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -41, 5, 0)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WallWest"]
+shape = SubResource("WallShapeEW")
+
+[node name="WallNorth" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 41)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WallNorth"]
+shape = SubResource("WallShapeNS")
+
+[node name="WallSouth" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, -41)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WallSouth"]
+shape = SubResource("WallShapeNS")
 
 [node name="ForestScatter" type="Node3D" parent="." instance=ExtResource("3")]
 clear_half_width = 20.0

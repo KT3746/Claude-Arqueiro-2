@@ -81,6 +81,7 @@ func _touch_end(index: int) -> void:
 		_joy_touch_index = -1
 		_joy_output = Vector2.ZERO
 		joystick_layer.visible = false
+		_release_movement() # senão o personagem continua andando sozinho
 	elif index == _look_touch_index:
 		_look_touch_index = -1
 	elif index == _shoot_touch_index:
@@ -95,13 +96,37 @@ func _update_joystick_visual() -> void:
 	knob.position = _joy_output * joystick_radius - knob.size * 0.5
 
 func _process(_delta: float) -> void:
-	if _joy_touch_index == -1:
-		return
-	var v: Vector2 = _joy_output
+	var v: Vector2 = _joy_output if _joy_touch_index != -1 else Vector2.ZERO
 	if v.length() < joystick_dead_zone / joystick_radius:
 		v = Vector2.ZERO
 	_drive_axis("move_left", "move_right", v.x)
 	_drive_axis("move_forward", "move_back", v.y)
+
+## Solta todas as ações de toque. Chamado ao largar o analógico, ao pausar,
+## ao sair da cena e quando o app perde o foco — sem isso uma ação fica
+## "grudada" e o jogador se move/atira sozinho.
+func _release_movement() -> void:
+	for action in ["move_forward", "move_back", "move_left", "move_right"]:
+		Input.action_release(action)
+
+func release_all() -> void:
+	_release_movement()
+	Input.action_release("shoot")
+	Input.action_release("aim")
+	_joy_touch_index = -1
+	_look_touch_index = -1
+	_shoot_touch_index = -1
+	_aim_touch_index = -1
+	_joy_output = Vector2.ZERO
+	if is_instance_valid(joystick_layer):
+		joystick_layer.visible = false
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_APPLICATION_FOCUS_OUT or what == NOTIFICATION_WM_WINDOW_FOCUS_OUT:
+		release_all()
+
+func _exit_tree() -> void:
+	release_all()
 
 func _drive_axis(neg_action: String, pos_action: String, value: float) -> void:
 	if value < -0.02:

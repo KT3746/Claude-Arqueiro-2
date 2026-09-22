@@ -30,6 +30,14 @@ func _pause() -> void:
 	get_tree().paused = true
 	panel.show()
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	_release_touch_actions()
+
+## Com a árvore pausada o TouchControls para de processar, então um dedo
+## que estava segurando o analógico/botão deixaria a ação presa.
+func _release_touch_actions() -> void:
+	var touch := get_tree().get_first_node_in_group("touch_controls")
+	if touch and touch.has_method("release_all"):
+		touch.release_all()
 
 func _resume() -> void:
 	_paused = false
@@ -49,6 +57,8 @@ func _on_restart_pressed() -> void:
 func _on_menu_pressed() -> void:
 	Audio.play("click")
 	get_tree().paused = false
+	Engine.time_scale = 1.0
+	GameState.flush_save()
 	get_tree().change_scene_to_file("res://scenes/ui/MainMenu.tscn")
 
 func _on_game_over() -> void:

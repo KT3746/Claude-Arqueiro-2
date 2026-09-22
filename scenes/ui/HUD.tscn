@@ -1,10 +1,25 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/HUD.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/Crosshair.gd" id="2"]
 
+[sub_resource type="Shader" id="VignetteShader"]
+code = "shader_type canvas_item;\nuniform float intensity : hint_range(0.0, 1.0) = 0.0;\nuniform vec3 tint = vec3(0.75, 0.05, 0.05);\nvoid fragment() {\n\tvec2 d = UV - vec2(0.5);\n\tfloat r = length(d) * 1.7;\n\tfloat v = smoothstep(0.35, 1.0, r);\n\tCOLOR = vec4(tint, v * intensity);\n}"
+
+[sub_resource type="ShaderMaterial" id="VignetteMat"]
+shader = SubResource("VignetteShader")
+shader_parameter/intensity = 0.0
+shader_parameter/tint = Vector3(0.75, 0.05, 0.05)
+
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1")
+
+[node name="Vignette" type="ColorRect" parent="."]
+material = SubResource("VignetteMat")
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(1, 1, 1, 1)
 
 [node name="Crosshair" type="Control" parent="."]
 anchor_right = 1.0
@@ -71,6 +86,23 @@ theme_override_constants/shadow_offset_x = 2
 theme_override_constants/shadow_offset_y = 2
 horizontal_alignment = 1
 text = "Onda 1"
+
+[node name="HitPopup" type="Label" parent="Margin"]
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = -110.0
+offset_right = 160.0
+offset_bottom = -70.0
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.7)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+horizontal_alignment = 1
+text = ""
 
 [node name="HealthBar" type="ProgressBar" parent="Margin"]
 anchor_top = 1.0

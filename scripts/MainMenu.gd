@@ -1,6 +1,9 @@
 extends Control
 
 func _ready() -> void:
+	# Garante estado limpo ao voltar de uma partida (hit-stop/pausa pendentes).
+	Engine.time_scale = 1.0
+	get_tree().paused = false
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	%TrainingButton.pressed.connect(_on_training_pressed)
 	%WaveButton.pressed.connect(_on_wave_pressed)

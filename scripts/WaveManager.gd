@@ -25,6 +25,10 @@ var _running: bool = false
 @export var first_wave_delay: float = 2.0
 
 func _ready() -> void:
+	add_to_group("wave_manager")
+	# Zera aqui e não só no start(): sem isso, ao reiniciar após morrer, a
+	# vida fica em 0 durante o atraso da 1ª onda (HUD errado e pausa travada).
+	GameState.reset_run()
 	for child in get_children():
 		if child is Marker3D:
 			_spawn_points.append(child)
@@ -36,7 +40,6 @@ func start() -> void:
 	if _running:
 		return
 	_running = true
-	GameState.reset_run()
 	_next_wave()
 
 func stop() -> void:

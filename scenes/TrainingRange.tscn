@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3]
+[gd_scene load_steps=21 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/entities/Player.tscn" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/entities/Target.tscn" id="2"]
@@ -26,6 +26,9 @@ roughness = 1.0
 
 [sub_resource type="BoxShape3D" id="WallShape"]
 size = Vector3(2, 12, 90)
+
+[sub_resource type="BoxShape3D" id="WallShapeNS"]
+size = Vector3(84, 12, 2)
 
 [sub_resource type="CylinderMesh" id="ChainMesh"]
 top_radius = 0.02
@@ -78,6 +81,22 @@ collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="WallWest"]
 shape = SubResource("WallShape")
+
+[node name="WallNorth" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 31)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WallNorth"]
+shape = SubResource("WallShapeNS")
+
+[node name="WallSouth" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, -61)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WallSouth"]
+shape = SubResource("WallShapeNS")
 
 [node name="ForestScatter" type="Node3D" parent="." instance=ExtResource("3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -15)

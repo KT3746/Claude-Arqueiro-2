@@ -31,7 +31,13 @@ var _bob_time: float = 0.0
 var _last_bob_phase: float = 0.0
 var _shake_strength: float = 0.0
 var _last_health: int = -1
+var _hit_stop_token: int = 0
+var _spawn_transform: Transform3D
 var alive: bool = true
+
+## Se o jogador cair abaixo disso, foi parar fora do mundo — devolvemos ele
+## ao ponto inicial em vez de deixar cair pra sempre.
+@export var void_y: float = -15.0
 
 var arrow_scene: PackedScene = preload("res://scenes/entities/Arrow.tscn")
 
@@ -47,6 +53,8 @@ var _bow_aim_pos := Vector3(0.0, -0.15, -0.40)
 var _bow_aim_rot := Vector3.ZERO
 
 func _ready() -> void:
+	_spawn_transform = global_transform
+	Engine.time_scale = 1.0 # limpa um hit-stop que tenha sobrado de outra cena
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	camera.fov = normal_fov
 	bow_view.position = _bow_hip_pos
@@ -61,6 +69,12 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		apply_look_delta(event.relative * mouse_sensitivity)
+	# No navegador, sair da pausa com ESC devolve o ponteiro ao sistema. Um
+	# clique dentro do jogo precisa recapturá-lo, senão a mira trava.
+	elif event is InputEventMouseButton and event.pressed \
+			and Input.mouse_mode != Input.MOUSE_MODE_CAPTURED \
+			and not get_tree().paused:
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 ## Gira a câmera. `delta` já vem multiplicado pela sensibilidade de quem
 ## chama (mouse ou o dedo no controle de toque no celular).
@@ -70,6 +84,9 @@ func apply_look_delta(delta: Vector2) -> void:
 
 func _physics_process(delta: float) -> void:
 	if not alive:
+		return
+	if global_position.y < void_y:
+		_recover_from_void()
 		return
 	rotation.y = _yaw
 	head.rotation.x = _pitch
@@ -154,9 +171,26 @@ func _fire_arrow() -> void:
 func _on_big_hit() -> void:
 	_shake_strength = max(_shake_strength, 0.12)
 	Engine.time_scale = 0.06
+	# Cada hit-stop carrega um "ticket": só o mais recente pode restaurar o
+	# tempo normal, senão dois acertos seguidos cortam o efeito um do outro.
+	_hit_stop_token += 1
+	var my_token: int = _hit_stop_token
 	get_tree().create_timer(0.05, true, false, true).timeout.connect(func():
-		Engine.time_scale = 1.0
+		if my_token == _hit_stop_token:
+			Engine.time_scale = 1.0
 	)
+
+## Volta ao ponto inicial se o jogador escapou do cenário de alguma forma.
+func _recover_from_void() -> void:
+	velocity = Vector3.ZERO
+	global_transform = _spawn_transform
+	_yaw = rotation.y
+	_pitch = 0.0
+	_shake_strength = 0.25
+	Audio.play("damage")
+
+func _exit_tree() -> void:
+	Engine.time_scale = 1.0
 
 func _on_health_changed(h: int, _max_h: int) -> void:
 	if _last_health != -1 and h < _last_health:
@@ -179,4 +213,10 @@ func _update_camera_fov(delta: float) -> void:
 
 func _on_game_over() -> void:
 	alive = false
+	is_drawing = false
+	draw_time = 0.0
+	is_aiming = false
+	if bow_view.has_method("set_draw"):
+		bow_view.set_draw(0.0)
+	Engine.time_scale = 1.0
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
