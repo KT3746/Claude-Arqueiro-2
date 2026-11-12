@@ -65,13 +65,17 @@ func reset_run() -> void:
 func register_shot() -> void:
 	arrows_fired += 1
 
-func register_hit(base_points: int, label: String = "") -> void:
+## `is_arrow` = false para bônus que não são uma flecha nova acertando
+## (ex.: o bônus de abate): soma pontos, mas não conta acerto nem combo —
+## senão a precisão passava de 100% (flecha que mata contava 2 acertos).
+func register_hit(base_points: int, label: String = "", is_arrow: bool = true) -> void:
 	if is_game_over:
 		return
-	arrows_hit += 1
-	combo += 1
-	_combo_timer = COMBO_WINDOW
-	var multiplier: float = 1.0 + (min(combo, 10) - 1) * 0.15
+	if is_arrow:
+		arrows_hit += 1
+		combo += 1
+		_combo_timer = COMBO_WINDOW
+	var multiplier: float = 1.0 + (clamp(combo, 1, 10) - 1) * 0.15
 	var points: int = int(round(base_points * multiplier))
 	score += points
 	if score > high_score:

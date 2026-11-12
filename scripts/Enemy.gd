@@ -103,7 +103,7 @@ func _update_flash(delta: float) -> void:
 
 func _die() -> void:
 	_dead = true
-	GameState.register_hit(kill_bonus, "Abatido")
+	GameState.register_hit(kill_bonus, "Abatido", false)
 	Audio.play("enemy_death")
 	died.emit()
 	queue_free()

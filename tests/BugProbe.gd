@@ -14,6 +14,7 @@ func _ready() -> void:
 	await _test_touch_joystick_release()
 	await _test_arrow_lifetime()
 	_test_world_bounds()
+	_test_accuracy_with_kills()
 	_report()
 
 func _check(ok: bool, name: String, detail: String = "") -> void:
@@ -95,6 +96,18 @@ func _test_world_bounds() -> void:
 				wall_count += 1
 		_check(wall_count >= 4, "%s tem barreira completa" % scene_path.get_file(),
 			"só %d parede(s) — dá pra andar pra fora do mapa e cair pra sempre" % wall_count)
+
+# 7. Flecha que abate um espectro conta UM acerto (o bônus de abate não é outra flecha)
+func _test_accuracy_with_kills() -> void:
+	GameState.reset_run()
+	for i in range(2):
+		GameState.register_shot()
+		GameState.register_hit(20, "Acerto")
+		GameState.register_hit(30, "Abatido", false)
+	var acc: float = GameState.get_accuracy()
+	_check(acc <= 100.0 and GameState.arrows_hit == 2, "precisão não passa de 100% com abates",
+		"2 flechas, %d acertos contados, precisão %.0f%%" % [GameState.arrows_hit, acc])
+	GameState.reset_run()
 
 func _report() -> void:
 	print("\n================ SONDA DE BUGS ================")
