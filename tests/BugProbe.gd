@@ -15,6 +15,7 @@ func _ready() -> void:
 	await _test_arrow_lifetime()
 	_test_world_bounds()
 	_test_accuracy_with_kills()
+	_test_colossus_waves()
 	_report()
 
 func _check(ok: bool, name: String, detail: String = "") -> void:
@@ -108,6 +109,26 @@ func _test_accuracy_with_kills() -> void:
 	_check(acc <= 100.0 and GameState.arrows_hit == 2, "precisão não passa de 100% com abates",
 		"2 flechas, %d acertos contados, precisão %.0f%%" % [GameState.arrows_hit, acc])
 	GameState.reset_run()
+
+# 8. Colosso: nunca antes da onda 5; depois dela aparece de vez em quando, forte e lento
+func _test_colossus_waves() -> void:
+	var scene: PackedScene = load("res://scenes/entities/Enemy.tscn")
+	var wm = load("res://scripts/WaveManager.gd").new()
+	var counts := {}
+	for wave in [3, 8]:
+		GameState.current_wave = wave
+		var n := 0
+		for i in range(300):
+			var e = scene.instantiate()
+			wm._configure_enemy(e)
+			if e.max_health >= 160 and e.move_speed < 2.0:
+				n += 1
+			e.free()
+		counts[wave] = n
+	wm.free()
+	GameState.reset_run()
+	_check(counts[3] == 0 and counts[8] > 20 and counts[8] < 120, "colosso só a partir da onda 5, com frequência razoável",
+		"onda 3: %d, onda 8: %d de 300" % [counts[3], counts[8]])
 
 func _report() -> void:
 	print("\n================ SONDA DE BUGS ================")

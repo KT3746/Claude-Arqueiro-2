@@ -10,6 +10,8 @@ signal died
 @export var attack_damage: int = 8
 @export var attack_cooldown: float = 1.1
 @export var kill_bonus: int = 30
+## Cor multiplicada no manto/cabeça (o colosso vem avermelhado).
+@export var tint: Color = Color.WHITE
 
 var health: int
 var _attack_timer: float = 0.0
@@ -40,6 +42,8 @@ func _setup_flash_materials() -> void:
 		if mat == null:
 			continue
 		mat = mat.duplicate()
+		if tint != Color.WHITE:
+			mat.albedo_color = mat.albedo_color * tint
 		mesh.set_surface_override_material(0, mat)
 		_flash_mats.append(mat)
 		_base_emission.append({"on": mat.emission_enabled, "color": mat.emission, "energy": mat.emission_energy_multiplier})

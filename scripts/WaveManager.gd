@@ -75,12 +75,23 @@ func _spawn_one() -> void:
 	enemy.died.connect(_on_enemy_died)
 	_alive_enemies += 1
 
-## Deixa os espectros mais fortes/rápidos a cada onda, e a partir da 3ª onda
-## uma chance de vir um "batedor" — menor, mais fraco, mas bem mais rápido.
+## Deixa os espectros mais fortes/rápidos a cada onda. A partir da 3ª onda
+## pode vir um "batedor" — menor, mais fraco, mas bem mais rápido — e a partir
+## da 5ª um "colosso": enorme, lento, aguenta muitas flechas e bate forte.
 func _configure_enemy(enemy: Node) -> void:
 	var wave: int = GameState.current_wave
-	var is_scout: bool = wave >= 3 and randf() < 0.3
-	if is_scout:
+	var roll: float = randf()
+	var is_colossus: bool = wave >= 5 and roll < 0.12 + min(wave - 5, 5) * 0.02
+	var is_scout: bool = not is_colossus and wave >= 3 and randf() < 0.3
+	if is_colossus:
+		enemy.max_health = 160 + (wave - 5) * 15
+		enemy.move_speed = 1.6
+		enemy.attack_damage = 18
+		enemy.attack_range = 2.4
+		enemy.kill_bonus = 80
+		enemy.scale = Vector3(1.6, 1.6, 1.6)
+		enemy.tint = Color(1.0, 0.5, 0.45)
+	elif is_scout:
 		enemy.max_health = 18
 		enemy.move_speed = 4.2
 		enemy.kill_bonus = 20
